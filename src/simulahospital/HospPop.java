@@ -13,12 +13,12 @@ import org.apache.http.message.BasicNameValuePair;
  *
  * @author chris
  */
-public class HospPush implements Runnable {
+public class HospPop implements Runnable {
 
     String hospCode;
     ArrayList<Integer> intervals;
 
-    public HospPush(String hospCode, ArrayList<Integer> intervals) throws FileNotFoundException {
+    public HospPop(String hospCode, ArrayList<Integer> intervals) throws FileNotFoundException {
         this.hospCode = hospCode;
         this.intervals = intervals;
     }
@@ -30,34 +30,35 @@ public class HospPush implements Runnable {
         //Colocar usuário na fila
         for (Integer i : intervals) {
 
-            tempo = i * 500;
+            tempo = i * 1000;
 
             List<NameValuePair> jsonData = new ArrayList<>();
             jsonData.add(new BasicNameValuePair("hospitalCode", hospCode));
 
             //cria um post                
-            Post p = new Post("http://tcc-si.herokuapp.com/api/queue/push", jsonData);
+            Post p = new Post("http://tcc-si.herokuapp.com/api/queue/pop", jsonData);
             ArrayList<String> response;
 
             try {
                 response = p.sendRequest();
 
+
                 /* response.forEach((s) -> {
                     System.out.println(s);
                 });*/
                 if (response.get(0).contains("200")) {
-                    System.out.println("Usuário inserido com sucesso em " + response.get(1));
+                    System.out.println("Usuário retirado com sucesso de " + response.get(1));
                 } else {
-                    System.out.println("Falha ao inserir usuário em " + response.get(1));
+                    System.out.println("Falha ao retirado usuário de " + response.get(1));
                 }
 
                 System.out.print("\n//Esperando " + tempo + "ms\n");
                 Thread.sleep(tempo);
 
             } catch (IOException ex) {
-                Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
-                Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 

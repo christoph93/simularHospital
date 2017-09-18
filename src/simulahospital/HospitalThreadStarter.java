@@ -5,11 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,9 +28,6 @@ public class HospitalThreadStarter {
 
             intervals = new ArrayList<>();
 
-            ArrayList<HospPush> hospPushList = new ArrayList<>();
-            ArrayList<HospPop> hospPopList = new ArrayList<>();
-
             BufferedReader br = new BufferedReader(fr);
             String line = br.readLine();
 
@@ -51,19 +45,22 @@ public class HospitalThreadStarter {
             br.close();
             fr.close();
 
-            ExecutorService es = Executors.newSingleThreadExecutor();
-
-            for (String hosp : hospCodes) {
-
-                System.out.println("Iniciando Push thread para " + hosp);
-                es.submit(new HospPush(hosp, intervals));
-
-                System.out.println("Iniciando Pop thread para " + hosp);
-                es.submit(new HospPop(hosp, intervals));
+            ExecutorService executor = Executors.newFixedThreadPool(hospCodes.length * 2);
+            
+            for (String s : hospCodes) {
+                HospPush hospPush = new HospPush(s, intervals);                
+                System.out.println("Starting push for " + hospPush.getHospCode());
+                executor.execute(hospPush);
+                
+                HospPop hospPop = new HospPop(s, intervals);
+                System.out.println("Starting pop for " + hospPop.getHospCode());
+                executor.execute(hospPop);
             }
             
+            executor.shutdown();
+            while (!executor.isTerminated()) {
+            }           
             
-            es.shutdown();
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HospitalThreadStarter.class.getName()).log(Level.SEVERE, null, ex);

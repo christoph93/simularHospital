@@ -55,10 +55,15 @@ public class HospPop implements Runnable {
                 System.out.print("\n//Esperando " + tempo + "ms\n");
                 Thread.sleep(tempo);
 
-            } catch (IOException ex) {
+            } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                System.out.println(hospCode + " pop. Waiting " + tempo);
+                try {
+                    Thread.sleep(tempo);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
 

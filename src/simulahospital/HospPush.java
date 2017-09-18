@@ -30,21 +30,23 @@ public class HospPush implements Runnable {
         //Colocar usuário na fila
         for (Integer i : intervals) {
 
-            tempo = i * 500;
+            tempo = i * 1000;
 
             List<NameValuePair> jsonData = new ArrayList<>();
             jsonData.add(new BasicNameValuePair("hospitalCode", hospCode));
 
             //cria um post                
             Post p = new Post("http://tcc-si.herokuapp.com/api/queue/push", jsonData);
-            ArrayList<String> response;
+            ArrayList<String> response = null;
 
             try {
                 response = p.sendRequest();
 
-                /* response.forEach((s) -> {
+                /*
+                 response.forEach((s) -> {
                     System.out.println(s);
-                });*/
+                });
+                 */
                 if (response.get(0).contains("200")) {
                     System.out.println("Usuário inserido com sucesso em " + response.get(1));
                 } else {
@@ -54,11 +56,18 @@ public class HospPush implements Runnable {
                 System.out.print("\n//Esperando " + tempo + "ms\n");
                 Thread.sleep(tempo);
 
-            } catch (IOException ex) {
+            } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
+                //System.out.println(ex);
+            } finally {
+                System.out.println(hospCode + " push. Waiting " + tempo);
+                try {
+                    Thread.sleep(tempo);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
+
         }
 
     }

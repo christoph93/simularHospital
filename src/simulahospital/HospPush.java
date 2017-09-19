@@ -59,14 +59,15 @@ public class HospPush implements Runnable {
             } catch (IOException | InterruptedException ex) {
                 Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
                 //System.out.println(ex);
-            } finally {
+            } 
+            /*finally {
                 System.out.println(hospCode + " push. Waiting " + tempo);
                 try {
                     Thread.sleep(tempo);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
+            }*/
 
         }
 

@@ -21,6 +21,7 @@ public class User {
     private Map<String, Integer> waitTimes;
     private int arrival;
     private int service;
+    private String bestChoice = "Nenhuma melhor escolha";
 
     public User(Map<String,Integer> travelTimes, int arrival, int service) {
         this.travelTimes = travelTimes;
@@ -29,20 +30,41 @@ public class User {
         this.service = service;
     }
 
+    //calcula o melhor tempo fazendo a chamada em tempo real
     public String bestChoice() throws IOException {
 
         int bestTime = 999;
+        int currTotalTime = 0;        
+        
+        Get g = new Get();                
+        HospTimes htimes = new HospTimes(travelTimes.keySet());
+        waitTimes = htimes.getTimes();        
+        
+        for (String s : waitTimes.keySet()) {
+            
+            //calcula o tempo total para cada hospital
+            currTotalTime = travelTimes.get(s) + waitTimes.get(s);
+
+            //decide se é melhor que o melhor tempo atual
+            if (bestTime > currTotalTime) {
+                bestChoice = s;
+                bestTime = currTotalTime;
+            }
+        }
+        return bestChoice;
+    }
+    
+    
+    //calcula o melhor tempo recebendo um Map
+    public String bestChoice(Map<String,Integer> waitTimes){
+        
+        int bestTime = 999;
         int currTotalTime = 0;
-        String bestChoice = "Nenhuma melhor escolha";
+        bestChoice = "Nenhuma melhor escolha";  
         
-        
-        //retorna os atuais tempos de espera para cada hospital
-        HospTimes hTimes = new HospTimes();        
-        waitTimes = hTimes.getTimes();
-        
-        //itera por todos os hospitais        
-        for (String s : travelTimes.keySet()) {
-            //calcula o tempo total para o hospital
+        for (String s : waitTimes.keySet()) {
+            
+            //calcula o tempo total para cada hospital
             currTotalTime = travelTimes.get(s) + waitTimes.get(s);
 
             //decide se é melhor que o melhor tempo atual
@@ -57,22 +79,17 @@ public class User {
     
     @Override
     public String toString(){        
-        try {
-            String s = "Travel times: ";
-            for (String k : travelTimes.keySet()){
-                s += k + "->" + travelTimes.get(k).toString() + " ";                
-            }
-            System.out.println(s);
-            s += "\nWait times: ";
-            for(String k : waitTimes.keySet()){
-                s += k + "->" + waitTimes.get(k).toString() + " ";
-            }
-            System.out.println(s);
-            return s += "\nBest choice: " + bestChoice();
-        } catch (IOException ex) {
-            Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
-            return "Failed at User.toString()";
+        String s = "Travel times: ";
+        for (String k : travelTimes.keySet()){
+            s += k + "->" + travelTimes.get(k).toString() + " ";
         }
+        System.out.println(s);
+        s += "\nWait times: ";
+        for(String k : waitTimes.keySet()){
+            s += k + "->" + waitTimes.get(k).toString() + " ";
+        }
+        System.out.println(s);
+        return s += "\nBest choice: " + bestChoice;
     }
 
     public Map<String, Integer> getTravelTimes() {
@@ -90,5 +107,23 @@ public class User {
     public void setWaitTimes(Map<String, Integer> waitTimes) {
         this.waitTimes = waitTimes;
     }
+
+    public int getArrival() {
+        return arrival;
+    }
+
+    public void setArrival(int arrival) {
+        this.arrival = arrival;
+    }
+
+    public int getService() {
+        return service;
+    }
+
+    public void setService(int service) {
+        this.service = service;
+    }
+    
+    
 
 }

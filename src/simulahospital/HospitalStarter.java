@@ -16,21 +16,19 @@ public class HospitalStarter {
 
     private FileReader fr;
     String fileName;
-    ArrayList<User> intervals;
+    static ArrayList<User> intervals;
 
     public HospitalStarter(String file) {
         fileName = file;
     }
-    
-    
+
     /*
     
     Lê os a lista de chegadas global e decide para qual hospital o usuário será enviado
     
-    */
-
+     */
     public void start() {
-
+        
         try {
             fr = new FileReader(fileName);
 
@@ -41,60 +39,61 @@ public class HospitalStarter {
             line = br.readLine(); //linha dos hopsitais
 
             String[] hospCodes = line.split(";"); //coloca os hospCodes em um array            
-            
+
+            /*
             String aux = "";
             for (String s : hospCodes){
                 aux += s + "; ";
             }            
             System.out.println(aux);
-                 
+             */
             String[] lineElements;
-            
+
             //aramzena os tempos de viagem para cada hospital por linha
-            Map<String,Integer> travelTimes;
-            
+            Map<String, Integer> travelTimes;
+
             //começa leitura do aquivo
             while (line != null) {
-                line = br.readLine();                
+                line = br.readLine();
                 if (line != null) {
                     //converte a linha em array separando os elementos por ;                   
-                    lineElements = line.split(";");    
+                    lineElements = line.split(";");
                     travelTimes = new HashMap<>();
-                                       
+
                     //primeiro elemento: intervalo para o próximo push
                     //segundo elemento: tempo de atendimento (tempo para o próximo pop)
                     //demais elementos: tempos de viagem para cada hospital, na ordem que estão na 2ª linha do arquivo
-                    
                     //coloca os tempos de viagem correspondentes a cada hospital no map de tempos (começando pelo 3º elemento
-                    for(int i = 2; i < hospCodes.length+2; i++){
-                        travelTimes.put(hospCodes[i-2], Integer.parseInt(lineElements[i]));                       
-                    }   
+                    for (int i = 2; i < hospCodes.length + 2; i++) {
+                        travelTimes.put(hospCodes[i - 2], Integer.parseInt(lineElements[i]));
+                    }
                     //coloca todos os usuários com os tempos de viagem, intervalo e espera na lista de intervalos                    
                     intervals.add(new User(travelTimes, Integer.parseInt(lineElements[0]), Integer.parseInt(lineElements[1])));
                 }
             }
-            
+
             br.close();
-            fr.close();  
-           
-            ExecutorService executor = Executors.newFixedThreadPool(2);            
+            fr.close();
+
+            ExecutorService executor = Executors.newFixedThreadPool(3);
+
+            Clock c = new Clock();
+            executor.execute(c);
             
-                HospPush hospPush = new HospPush(intervals);                
-                System.out.println("Starting push thread");
-                executor.execute(hospPush);
-                
-               /* HospPop hospPop = new HospPop(intervals);
-                System.out.println("Starting pop thread");
-                executor.execute(hospPop);*/
-            
-        
+            HospPush hospPush = new HospPush();
+            System.out.println("*Starting push thread*");
+            executor.execute(hospPush);
+
+            HospPop hospPop = new HospPop();
+            System.out.println("*Starting pop thread*");
+            executor.execute(hospPop);
+
             executor.shutdown();
-            while (!executor.isTerminated()) {
-            }           
+            while (!executor.isTerminated()) {                
+            }
+            
             
 
-            
-            
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HospitalStarter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -106,6 +105,10 @@ public class HospitalStarter {
 
     public FileReader getFr() {
         return fr;
+    }
+
+    static ArrayList<User> getIntervals() {
+        return intervals;
     }
 
     public String getFileName() {

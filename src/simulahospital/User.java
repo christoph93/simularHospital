@@ -17,7 +17,7 @@ public class User {
 
     private Map<String, Integer> travelTimes;
     private Map<String, Integer> queueWaitTimes;
-    private Map<String, Integer> totalTimes;
+    private HashMap<String, Integer> totalTimes;
     private int nextArrival;
     private int service;
     private String bestChoice = "no best choice";
@@ -32,7 +32,7 @@ public class User {
     //calcula o melhor tempo fazendo a chamada em tempo real
     public HashMap<String, Integer> calculateTotalTimes() throws IOException {
 
-        HashMap<String, Integer> totalTimes = new HashMap<>(travelTimes.keySet().size());
+        HashMap<String, Integer> localTotalTimes = new HashMap<>(travelTimes.keySet().size());
 
         HospTimes htimes = new HospTimes(travelTimes.keySet());
         queueWaitTimes = htimes.getTimes();
@@ -41,8 +41,8 @@ public class User {
             //calcula o tempo total para cada hospital         
             totalTimes.put(s, travelTimes.get(s) + queueWaitTimes.get(s));
         });
-        this.totalTimes = totalTimes;
-        return totalTimes;
+        this.totalTimes = localTotalTimes;
+        return this.totalTimes;
     }
 
     //calcula o melhor tempo recebendo um Map (para teste offline)
@@ -64,7 +64,6 @@ public class User {
         int currTotalTime = 0;
 
         for (String s : totalTimes.keySet()) {
-
             currTotalTime = queueWaitTimes.get(s) + travelTimes.get(s);
             //decide se é melhor que o melhor tempo atual
             if (bestTime > currTotalTime) {
@@ -81,7 +80,7 @@ public class User {
                 " Wait times: " + queueWaitTimes + 
                 " Total times: " + totalTimes +  
                 " Best choice: " + bestChoice +
-                "\nNext arrival: " + nextArrival +
+                "\nNext arrival: " + nextArrival +                
                 " Service time: " + service;
 
     }

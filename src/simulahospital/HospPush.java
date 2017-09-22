@@ -12,18 +12,12 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class HospPush implements Runnable {
 
-    ArrayList<User> intervals;
-
-    public HospPush(ArrayList<User> intervals) throws FileNotFoundException {
-        this.intervals = intervals;
-    }
-
     @Override
     public void run() {
-        long tempo = 0;
+        long time = 0;
 
         //usa o keySet (lista de hospitais)
-        HospTimes hTimes = new HospTimes(intervals.get(0).getTravelTimes().keySet());
+        HospTimes hTimes = new HospTimes(HospitalStarter.getIntervals().get(0).getTravelTimes().keySet());
 
         Map<String, Integer> queueWaitTimes = null;
 
@@ -33,12 +27,12 @@ public class HospPush implements Runnable {
         //para atualizar na primeira vez que entrar no for
         int i = getTimeInterval;
 
-        for (User u : intervals) {
+        for (User u : HospitalStarter.getIntervals()) {
             //atualiza os tempos em um itervalo para não sobrecarregar o backend
             if (getTimeInterval == i) {
                 try {
-                    System.out.println("Updating wait times");
                     queueWaitTimes = hTimes.getTimes();
+                    System.out.println("Updating wait times: " + queueWaitTimes);
                 } catch (IOException ex) {
                     Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -47,21 +41,19 @@ public class HospPush implements Runnable {
             i++;
 
             //intervalo
-            tempo = u.getNextArrival() * 1000;
+            time = u.getNextArrival();
             List<NameValuePair> jsonData = new ArrayList<>();
 
             //cria o post para a melhor escolha
             u.calculateTotalTimes(queueWaitTimes); //calcula os tempos
-            jsonData.add(new BasicNameValuePair("hospitalCode", u.bestChoice())); //atribui a melhor escolha para hospitalCode
-
-            System.out.println(u.toString());
+            jsonData.add(new BasicNameValuePair("hospitalCode", u.bestChoice())); //atribui a melhor escolha para hospitalCode           
 
             Post p = new Post("http://tcc-si.herokuapp.com/api/queue/push", jsonData);
             ArrayList<String> response = new ArrayList<>();
-            
-            response.add(0, "200"); 
-            response.add(1, "hospCode filler"); 
-            response.add(2, "name filler"); 
+
+            response.add(0, "200");
+            response.add(1, "hospCode filler");
+            response.add(2, "name filler");
             response.add(3, "location filler");
             response.add(4, "queue filler");
 
@@ -73,21 +65,23 @@ public class HospPush implements Runnable {
                 Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
                 //System.out.println(ex);
             } finally {
-                System.out.println("Pushing to " + u.bestChoice());
+                System.out.println("-> Pushing to " + u.bestChoice());
 
                 if (response.get(0).contains("200")) {
-                    System.out.println("Usuário inserido com sucesso em " + response.get(1));
+                    System.out.println("Successfull push to " + response.get(1));
                 } else {
-                    System.out.println("Falha ao inserir usuário em " + response.get(1));
+                    System.out.println("Failed push to " + response.get(1));
                 }
-                System.out.print("\n//Esperando " + tempo + "ms\n");
+                System.out.println("Waiting " + time + "s for next push");
                 try {
-                    Thread.sleep(tempo);
+                    Thread.sleep(time * 1000);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
+            if (u == HospitalStarter.getIntervals().get(HospitalStarter.getIntervals().size() - 1)) {
+                System.out.println("Finished pushing");
+            }
         }
 
     }

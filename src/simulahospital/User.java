@@ -8,8 +8,6 @@ package simulahospital;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -18,55 +16,56 @@ import java.util.logging.Logger;
 public class User {
 
     private Map<String, Integer> travelTimes;
-    private Map<String, Integer> waitTimes;
-    private int arrival;
+    private Map<String, Integer> queueWaitTimes;
+    private Map<String, Integer> totalTimes;
+    private int nextArrival;
     private int service;
-    private String bestChoice = "Nenhuma melhor escolha";
+    private String bestChoice = "no best choice";
 
-    public User(Map<String,Integer> travelTimes, int arrival, int service) {
+    public User(Map<String, Integer> travelTimes, int arrival, int service) {
         this.travelTimes = travelTimes;
-        waitTimes = new HashMap<>(travelTimes.size());
-        this.arrival = arrival;
+        queueWaitTimes = new HashMap<>(travelTimes.size());
+        this.nextArrival = arrival;
         this.service = service;
     }
 
     //calcula o melhor tempo fazendo a chamada em tempo real
-    public String bestChoice() throws IOException {
+    public HashMap<String, Integer> calculateTotalTimes() throws IOException {
 
-        int bestTime = 999;
-        int currTotalTime = 0;        
-        
-        Get g = new Get();                
+        HashMap<String, Integer> totalTimes = new HashMap<>(travelTimes.keySet().size());
+
         HospTimes htimes = new HospTimes(travelTimes.keySet());
-        waitTimes = htimes.getTimes();        
-        
-        for (String s : waitTimes.keySet()) {
-            
-            //calcula o tempo total para cada hospital
-            currTotalTime = travelTimes.get(s) + waitTimes.get(s);
+        queueWaitTimes = htimes.getTimes();
 
-            //decide se é melhor que o melhor tempo atual
-            if (bestTime > currTotalTime) {
-                bestChoice = s;
-                bestTime = currTotalTime;
-            }
-        }
-        return bestChoice;
+        queueWaitTimes.keySet().stream().forEach((s) -> {
+            //calcula o tempo total para cada hospital         
+            totalTimes.put(s, travelTimes.get(s) + queueWaitTimes.get(s));
+        });
+        this.totalTimes = totalTimes;
+        return totalTimes;
     }
-    
-    
-    //calcula o melhor tempo recebendo um Map
-    public String bestChoice(Map<String,Integer> waitTimes){
-        
+
+    //calcula o melhor tempo recebendo um Map (para teste offline)
+    public HashMap<String, Integer> calculateTotalTimes(Map<String, Integer> waitTimes) {
+        HashMap<String, Integer> totalTimes = new HashMap<>(travelTimes.keySet().size());
+        queueWaitTimes = waitTimes;
+
+        queueWaitTimes.keySet().stream().forEach((s) -> {
+            //calcula o tempo total para cada hospital         
+            totalTimes.put(s, travelTimes.get(s) + queueWaitTimes.get(s));
+        });
+        this.totalTimes = totalTimes;
+        return totalTimes;
+    }
+
+    public String bestChoice() {
+
         int bestTime = 999;
         int currTotalTime = 0;
-        bestChoice = "Nenhuma melhor escolha";  
-        
-        for (String s : waitTimes.keySet()) {
-            
-            //calcula o tempo total para cada hospital
-            currTotalTime = travelTimes.get(s) + waitTimes.get(s);
 
+        for (String s : totalTimes.keySet()) {
+
+            currTotalTime = queueWaitTimes.get(s) + travelTimes.get(s);
             //decide se é melhor que o melhor tempo atual
             if (bestTime > currTotalTime) {
                 bestChoice = s;
@@ -75,21 +74,16 @@ public class User {
         }
         return bestChoice;
     }
-    
-    
+
     @Override
-    public String toString(){        
-        String s = "Travel times: ";
-        for (String k : travelTimes.keySet()){
-            s += k + "->" + travelTimes.get(k).toString() + " ";
-        }
-        System.out.println(s);
-        s += "\nWait times: ";
-        for(String k : waitTimes.keySet()){
-            s += k + "->" + waitTimes.get(k).toString() + " ";
-        }
-        System.out.println(s);
-        return s += "\nBest choice: " + bestChoice;
+    public String toString() {
+        return "Travel times: " + travelTimes + 
+                " Wait times: " + queueWaitTimes + 
+                " Total times: " + totalTimes +  
+                " Best choice: " + bestChoice +
+                "\nNext arrival: " + nextArrival +
+                " Service time: " + service;
+
     }
 
     public Map<String, Integer> getTravelTimes() {
@@ -101,19 +95,19 @@ public class User {
     }
 
     public Map<String, Integer> getWaitTimes() {
-        return waitTimes;
+        return queueWaitTimes;
     }
 
     public void setWaitTimes(Map<String, Integer> waitTimes) {
-        this.waitTimes = waitTimes;
+        this.queueWaitTimes = waitTimes;
     }
 
-    public int getArrival() {
-        return arrival;
+    public int getNextArrival() {
+        return nextArrival;
     }
 
-    public void setArrival(int arrival) {
-        this.arrival = arrival;
+    public void setNextArrival(int arrival) {
+        this.nextArrival = arrival;
     }
 
     public int getService() {
@@ -123,7 +117,5 @@ public class User {
     public void setService(int service) {
         this.service = service;
     }
-    
-    
 
 }

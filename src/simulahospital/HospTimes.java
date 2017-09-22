@@ -1,17 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package simulahospital;
 
-import java.util.List;
-import org.apache.http.NameValuePair;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -19,27 +12,31 @@ import java.util.Map;
  */
 public class HospTimes {
 
-    private ObjectMapper mapper;
+    private Set<String> hospCodes;
 
-    public HospTimes() {
-        mapper = new ObjectMapper();
+    public HospTimes(Set hospCodes) {
+        this.hospCodes = hospCodes;
     }
 
-    public Map<String,Integer> getTimes() throws IOException {
+    public Map<String, Integer> getTimes() throws IOException {
 
+        ObjectMapper mapper = new ObjectMapper();
         Get g = new Get();
-        String json = g.sendRequest("http://tcc-si.herokuapp.com/api/");
+        Map<String, Integer> times = new HashMap<>();
+        
+        /*
+        for (String s : hospCodes) {
+            String json = g.sendRequest("http://tcc-si.herokuapp.com/api/queue/getMediumTime/" + s);
+            HospitalObj hosp = mapper.readValue(json, HospitalObj.class);
+            times.put(hosp.getHospCode(), hosp.getTime());
+        }*/
 
-        Map<String,Integer> times = new HashMap<>();
+        //System.out.println(json);        
         
-        //System.out.println(json);
-        HospitalObj hosp = mapper.readValue(json, HospitalObj.class);
+        //para teste: (descomentar o for depois)
+        times.put("puc", 17);
+        times.put("moinhos", 12);        
         
-        //times.put(hosp.getHospCode(), hosp.getTime());
-        //para teste:
-        
-        times.put("puc", 34);
-        times.put("moinhos", 26);
         return times;
 
     }

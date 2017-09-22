@@ -56,7 +56,7 @@ public class Post {
 
                 BufferedReader brResp = null;
 
-                responseList.add(response.getStatusLine().toString());
+                responseList.add(0, response.getStatusLine().toString());
                 HttpEntity entity = response.getEntity();
                 StringBuilder sb = new StringBuilder();
 
@@ -83,15 +83,15 @@ public class Post {
                 //cria um objeto JSON a partir da resposta do request
                 JSONObject jsonResp = new JSONObject(sb.toString());
 
-                responseList.add(jsonResp.get("hospitalCode").toString());
-                responseList.add(jsonResp.get("name").toString());
-                responseList.add(jsonResp.get("location").toString());
+                responseList.add(1, jsonResp.get("hospitalCode").toString());
+                responseList.add(2, jsonResp.get("name").toString());
+                responseList.add(3, jsonResp.get("location").toString());
 
                 //converte a fila em uma array
                 JSONArray jsonArray = jsonResp.getJSONArray("queue");
 
                 for (Object s : jsonArray) {
-                    responseList.add(s.toString());
+                    responseList.add(4, s.toString());
                 }
                 EntityUtils.consume(entity);
             } finally {

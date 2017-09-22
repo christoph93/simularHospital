@@ -10,9 +10,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 public class Get {
 
-    public String sendRequest(String url) throws IOException {
-
-        /*url = "http://www.google.com/search?q=httpClient";
+    public String sendRequest(String url) throws IOException {      
 
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
@@ -28,10 +26,10 @@ public class Get {
         while ((line = rd.readLine()) != null) {
             result.append(line);
         }
-
-        return result.toString();*/
         
-        return "{\"hospCode\":\"puc\",\"time\":40}";
+        return result.toString();
+        
+        
         
     }
 

@@ -52,7 +52,7 @@ public class HospPush implements Runnable {
             ArrayList<String> response = new ArrayList<>();
 
             response.add(0, "200");
-            response.add(1, "hospCode filler");
+            response.add(1, u.bestChoice());
             response.add(2, "name filler");
             response.add(3, "location filler");
             response.add(4, "queue filler");
@@ -69,6 +69,9 @@ public class HospPush implements Runnable {
 
                 if (response.get(0).contains("200")) {
                     System.out.println("Successfull push to " + response.get(1));
+                    //adiciona na fila do pop correspondente
+                    System.out.println("Inserting pop interval of " + (u.getNextArrival() + u.getService()) + "s to " + response.get(1));
+                    HospitalStarter.getHospitals().get(u.bestChoice()).insertInerval(u.getNextArrival() + u.getService());
                 } else {
                     System.out.println("Failed push to " + response.get(1));
                 }

@@ -17,18 +17,23 @@ public class HospitalStarter {
     private FileReader fr;
     String fileName;
     static ArrayList<User> intervals;
+    static HashMap<String,HospPop> hospitals;
 
     public HospitalStarter(String file) {
         fileName = file;
     }
 
+    static HashMap<String,HospPop> getHospitals(){
+        return hospitals;
+    }
+    
     /*
     
     Lê os a lista de chegadas global e decide para qual hospital o usuário será enviado
     
      */
     public void start() {
-        
+
         try {
             fr = new FileReader(fileName);
 
@@ -74,25 +79,30 @@ public class HospitalStarter {
 
             br.close();
             fr.close();
+            
+            hospitals = new HashMap<>(hospCodes.length);
 
             ExecutorService executor = Executors.newFixedThreadPool(3);
 
             Clock c = new Clock();
             executor.execute(c);
-            
+
             HospPush hospPush = new HospPush();
             System.out.println("*Starting push thread*");
             executor.execute(hospPush);
-
-            HospPop hospPop = new HospPop();
-            System.out.println("*Starting pop thread*");
-            executor.execute(hospPop);
-
-            executor.shutdown();
-            while (!executor.isTerminated()) {                
+            
+            //cria uma pop thread para cada hospital
+            for (String s : hospCodes) {                
+                HospPop hPop = new HospPop(s);
+                hospitals.put(s, hPop);
+                System.out.println("*Starting pop thread for " + s + "*");
+                executor.execute(hPop);
             }
             
             
+            executor.shutdown();
+            while (!executor.isTerminated()) {
+            }
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HospitalStarter.class.getName()).log(Level.SEVERE, null, ex);

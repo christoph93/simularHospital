@@ -24,7 +24,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 /**
  *
  * @author chris
@@ -64,7 +63,7 @@ public class Post {
 
                 try {
                     brResp = new BufferedReader(new InputStreamReader(entity.getContent()));
-                    while ((line = brResp.readLine()) != null) {
+                    while ((line = brResp.readLine()) != null) {                        
                         sb.append(line);
                     }
 
@@ -79,32 +78,35 @@ public class Post {
                         }
                     }
                 }
-                
+
                 //cria um objeto JSON a partir da resposta do request
-                JSONObject jsonResp = new JSONObject(sb.toString());
+                if (sb.toString().contains("{")) {
+                    JSONObject jsonResp = new JSONObject(sb.toString());
 
-                responseList.add(1, jsonResp.get("hospitalCode").toString());
-                responseList.add(2, jsonResp.get("name").toString());
-                responseList.add(3, jsonResp.get("location").toString());
+                    responseList.add(1, jsonResp.get("hospitalCode").toString());
+                    responseList.add(2, jsonResp.get("name").toString());
+                    responseList.add(3, jsonResp.get("location").toString());
 
-                //converte a fila em uma array
-                JSONArray jsonArray = jsonResp.getJSONArray("queue");
+                    //converte a fila em uma array
+                    JSONArray jsonArray = jsonResp.getJSONArray("queue");
 
-                for (Object s : jsonArray) {
-                    responseList.add(4, s.toString());
+                    for (Object s : jsonArray) {
+                        responseList.add(4, s.toString());
+                    }
+                    EntityUtils.consume(entity);
+                } else{
+                    System.out.println("Failed post to " + url);
                 }
-                EntityUtils.consume(entity);
             } finally {
                 response.close();
             }
-
 
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Post.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return responseList;
-        
+
     }
 
 }

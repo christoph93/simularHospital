@@ -27,32 +27,29 @@ public class HospPop implements Runnable {
     }
 
     @Override
-    public void run() {       
-        
+    public void run() {
+
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
             Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         long time = 0;
-        Post p = null;        
+        Post p = null;
         ListIterator<Integer> it = popIntervals.listIterator();
         int i = 0;
 
-        while(running) {
-            while(!it.hasNext()){
+        while (running) {
+            while (!it.hasNext()) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
-            i = it.next();
-            
-            System.out.println("Pop interval for " + hospCode + ": " + i);
 
+            i = it.next();
             time = i * 1000;
 
             List<NameValuePair> jsonData = new ArrayList<>();
@@ -61,29 +58,20 @@ public class HospPop implements Runnable {
 
             ArrayList<String> response = new ArrayList<>();
 
-            response.add(0, "200");
-            response.add(1, hospCode);
-            response.add(2, "name filler");
-            response.add(3, "location filler");
-            response.add(4, "queue filler");
-
             try {
                 //envia o post e coloca a resposta no array
                 response = p.sendRequest();
-            } catch (IOException ex) {
-                Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                System.out.println("<- Popping from " + hospCode);
 
                 if (response.get(0).contains("200")) {
-                    System.out.println("Successfull pop from " + response.get(1));
+                    System.out.println("<- Pop from " + response.get(1) + "OK");
                 } else {
-                    System.out.println("Failed to pop from " + response.get(1));
+                    System.out.println("< Pop from " + response.get(1) + "FAIL");
                 }
+            } catch (IOException ex) {
+                Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex);
             }
-
             try {
-                System.out.println("Waiting " + i + "s for next pop from " + hospCode);
                 Thread.sleep(time);
             } catch (InterruptedException ex) {
                 Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);

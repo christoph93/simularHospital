@@ -34,14 +34,18 @@ public class User {
 
         HashMap<String, Integer> localTotalTimes = new HashMap<>(travelTimes.keySet().size());
 
-        HospTimes htimes = new HospTimes(travelTimes.keySet());
-        queueWaitTimes = htimes.getTimes();
+        HospTimes htimes = new HospTimes(travelTimes.keySet());        
+        queueWaitTimes = htimes.getTimes();        
 
         queueWaitTimes.keySet().stream().forEach((s) -> {
             //calcula o tempo total para cada hospital         
-            totalTimes.put(s, travelTimes.get(s) + queueWaitTimes.get(s));
+            localTotalTimes.put(s, travelTimes.get(s) + queueWaitTimes.get(s));
         });
         this.totalTimes = localTotalTimes;
+        System.out.println("totaTimes: " + totalTimes);
+            System.out.println("travelTimes: " + travelTimes);
+            System.out.println("queueTimes: " + queueWaitTimes);
+        
         return this.totalTimes;
     }
 

@@ -45,13 +45,6 @@ public class HospitalStarter {
 
             String[] hospCodes = line.split(";"); //coloca os hospCodes em um array            
 
-            /*
-            String aux = "";
-            for (String s : hospCodes){
-                aux += s + "; ";
-            }            
-            System.out.println(aux);
-             */
             String[] lineElements;
 
             //aramzena os tempos de viagem para cada hospital por linha

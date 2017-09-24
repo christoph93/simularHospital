@@ -15,10 +15,7 @@ public class Get {
         HttpClient client = HttpClientBuilder.create().build();
         HttpGet request = new HttpGet(url);
 
-        HttpResponse response = client.execute(request);
-
-        System.out.println("Response Code : "+ response.getStatusLine().getStatusCode());
-
+        HttpResponse response = client.execute(request);        
         BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 
         StringBuffer result = new StringBuffer();

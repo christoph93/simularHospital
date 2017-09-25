@@ -54,6 +54,10 @@ public class HospPush implements Runnable {
 
             Post p = new Post("http://tcc-si.herokuapp.com/api/queue/push", jsonData);
             ArrayList<String> response = new ArrayList<>();
+            
+            response.add(0, "200");
+            response.add(1, "hospCode");
+            
             try {
                 //envia o post e coloca a resposta no array
                 response = p.sendRequest();

@@ -28,7 +28,7 @@ public class HospTimes {
         Get g = new Get();
         Map<String, Integer> times = new HashMap<>();         
 
-        for (String s : hospCodes) {            
+       /* for (String s : hospCodes) {            
             try {
                 String response = g.sendRequest("http://tcc-si.herokuapp.com/api/queue/getMediumTime/" + s);
                 String[] aux = response.replace("\"", "").split(":");             
@@ -39,12 +39,12 @@ public class HospTimes {
                 System.out.println(ex);
             }
 
-        }
+        }*/
 
         //System.out.println(json);        
-        //para teste: (descomentar o for depois)
-        //times.put("puc", 5);
-        //times.put("moinhos", 5);        
+        //para teste: (comentar o for depois)
+        times.put("puc", 5);
+        times.put("moinhos", 5);        
         return times;
 
     }

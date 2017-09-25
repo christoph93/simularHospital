@@ -57,6 +57,8 @@ public class HospPop implements Runnable {
             p = new Post("http://tcc-si.herokuapp.com/api/queue/pop", jsonData);
 
             ArrayList<String> response = new ArrayList<>();
+            
+            response.add(0, "200");
 
             try {
                 //envia o post e coloca a resposta no array
@@ -69,7 +71,7 @@ public class HospPop implements Runnable {
                 }
             } catch (IOException ex) {
                 Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println(ex);
+                System.out.println(ex + " at HospPop");
             }
             try {
                 Thread.sleep(time);

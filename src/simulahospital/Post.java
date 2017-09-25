@@ -55,7 +55,8 @@ public class Post {
 
                 BufferedReader brResp = null;
 
-                responseList.add(0, response.getStatusLine().toString());
+               responseList.add(0, response.getStatusLine().toString());                
+                
                 HttpEntity entity = response.getEntity();
                 StringBuilder sb = new StringBuilder();
 
@@ -83,6 +84,9 @@ public class Post {
                 if (sb.toString().contains("{")) {
                     JSONObject jsonResp = new JSONObject(sb.toString());
 
+                    
+                    
+                    
                     responseList.add(1, jsonResp.get("hospitalCode").toString());
                     responseList.add(2, jsonResp.get("name").toString());
                     responseList.add(3, jsonResp.get("location").toString());

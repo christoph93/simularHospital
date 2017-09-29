@@ -2,9 +2,9 @@ package simulahospital;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.NameValuePair;
@@ -13,72 +13,73 @@ import org.apache.http.message.BasicNameValuePair;
 public class HospPop implements Runnable {
 
     private String hospCode;
-    private LinkedList<Integer> popIntervals;
+    private Queue<Integer> popIntervals;
     private boolean running = true;
 
     public HospPop(String hospCode) {
         this.hospCode = hospCode;
-        popIntervals = new LinkedList<>();
+        popIntervals = new LinkedBlockingDeque<>();
         popIntervals.add(0);
     }
 
     public void insertInerval(int interval) {
-        popIntervals.addLast(interval);
+        popIntervals.add(interval);
     }
 
     @Override
     public void run() {
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        long time = 0;
-        Post p = null;
-        ListIterator<Integer> it = popIntervals.listIterator();
-        int i = 0;
-
+        
         while (running) {
-            while (!it.hasNext()) {
+
+            while (popIntervals.isEmpty()) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
-            i = it.next();
-            time = i * 1000;
-
-            List<NameValuePair> jsonData = new ArrayList<>();
-            jsonData.add(new BasicNameValuePair("hospitalCode", hospCode));
-            p = new Post("http://tcc-si.herokuapp.com/api/queue/pop", jsonData);
-
-            ArrayList<String> response = new ArrayList<>();
             
-            response.add(0, "200");
+            Post p = null;
 
-            try {
-                //envia o post e coloca a resposta no array
-                response = p.sendRequest();
+            if (!popIntervals.isEmpty()) {                
+                //tira o próximo itervalo da fila
+                int popInterval = popIntervals.poll();  
+                
+                
+                if(popInterval == -1) running = false; //cheogu no final da fila e não serão colocados mais elementos
 
-                if (response.get(0).contains("200")) {
-                    System.out.println("<- Pop from " + response.get(1) + "OK");
-                } else {
-                    System.out.println("< Pop from " + response.get(1) + "FAIL");
+                try {
+                    Thread.sleep(popInterval * 1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (IOException ex) {
-                Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
-                System.out.println(ex + " at HospPop");
-            }
-            try {
-                Thread.sleep(time);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
+
+                List<NameValuePair> jsonData = new ArrayList<>();
+                jsonData.add(new BasicNameValuePair("hospitalCode", hospCode));
+                p = new Post("http://tcc-si.herokuapp.com/api/queue/pop", jsonData);
+
+                ArrayList<String> response = new ArrayList<>();
+
+                response.add(0, "200");
+                response.add(1, "puc");
+
+                try {
+                    //envia o post e coloca a resposta no array
+                    response = p.sendRequest();
+
+                } catch (IOException ex) {
+                    Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);                    
+                } finally {
+                    if (response.get(0).contains("200")) {
+                        System.out.println("<- Pop from " + response.get(1) + " OK");
+                    } else {
+                        System.out.println("<- Pop from " + response.get(1) + " FAIL");
+                    }
+                }
+
             }
         }
+        System.out.println("Finished popping for " + hospCode);
 
     }
 }

@@ -18,14 +18,14 @@ public class User {
     private Map<String, Integer> travelTimes;
     private Map<String, Integer> queueWaitTimes;
     private HashMap<String, Integer> totalTimes;
-    private int nextArrival;
+    private int arrivalDelay;
     private int service;
     private String bestChoice = "no best choice";
 
     public User(Map<String, Integer> travelTimes, int arrival, int service) {
         this.travelTimes = travelTimes;
         queueWaitTimes = new HashMap<>(travelTimes.size());
-        this.nextArrival = arrival;
+        this.arrivalDelay = arrival;
         this.service = service;
     }
 
@@ -49,7 +49,7 @@ public class User {
         return this.totalTimes;
     }
 
-    //calcula o melhor tempo recebendo um Map (para teste offline)
+    //calcula o melhor tempo recebendo um Map (para teste offline ou para calcular em itervalos)
     public HashMap<String, Integer> calculateTotalTimes(Map<String, Integer> waitTimes) {
         HashMap<String, Integer> totalTimes = new HashMap<>(travelTimes.keySet().size());
         queueWaitTimes = waitTimes;
@@ -84,7 +84,7 @@ public class User {
                 " Wait times: " + queueWaitTimes + 
                 " Total times: " + totalTimes +  
                 " Best choice: " + bestChoice +
-                "\nNext arrival: " + nextArrival +                
+                "\nArrival delay: " + arrivalDelay +                
                 " Service time: " + service;
 
     }
@@ -105,12 +105,12 @@ public class User {
         this.queueWaitTimes = waitTimes;
     }
 
-    public int getNextArrival() {
-        return nextArrival;
+    public int getArrivalDelay() {
+        return arrivalDelay;
     }
 
     public void setNextArrival(int arrival) {
-        this.nextArrival = arrival;
+        this.arrivalDelay = arrival;
     }
 
     public int getService() {

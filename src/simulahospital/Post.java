@@ -55,7 +55,7 @@ public class Post {
 
                 BufferedReader brResp = null;
 
-               responseList.add(0, response.getStatusLine().toString());                
+               responseList.add(0, response.getStatusLine().toString());     
                 
                 HttpEntity entity = response.getEntity();
                 StringBuilder sb = new StringBuilder();
@@ -82,9 +82,7 @@ public class Post {
 
                 //cria um objeto JSON a partir da resposta do request
                 if (sb.toString().contains("{")) {
-                    JSONObject jsonResp = new JSONObject(sb.toString());
-
-                    
+                    JSONObject jsonResp = new JSONObject(sb.toString());                  
                     
                     
                     responseList.add(1, jsonResp.get("hospitalCode").toString());
@@ -107,8 +105,7 @@ public class Post {
 
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Post.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        }  
         return responseList;
 
     }

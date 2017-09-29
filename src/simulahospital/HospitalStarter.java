@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +19,7 @@ public class HospitalStarter {
 
     private FileReader fr;
     String fileName;
-    static ArrayList<User> intervals;
+    static Queue<User> intervals;
     static HashMap<String,HospPop> hospitals;
 
     public HospitalStarter(String file) {
@@ -37,7 +40,7 @@ public class HospitalStarter {
         try {
             fr = new FileReader(fileName);
 
-            intervals = new ArrayList<>();
+            intervals = new LinkedBlockingDeque();
 
             BufferedReader br = new BufferedReader(fr);
             String line = br.readLine(); //para pular aprimeira linha do arquivo
@@ -66,7 +69,7 @@ public class HospitalStarter {
                         travelTimes.put(hospCodes[i - 2], Integer.parseInt(lineElements[i]));
                     }
                     //coloca todos os usuários com os tempos de viagem, intervalo e espera na lista de intervalos                    
-                    intervals.add(new User(travelTimes, Integer.parseInt(lineElements[0]), Integer.parseInt(lineElements[1])));
+                    intervals.offer(new User(travelTimes, Integer.parseInt(lineElements[0]), Integer.parseInt(lineElements[1])));
                 }
             }
 
@@ -84,14 +87,14 @@ public class HospitalStarter {
             System.out.println("*Starting push thread*");
             executor.execute(hospPush);
             
+                   
             //cria uma pop thread para cada hospital
             for (String s : hospCodes) {                
                 HospPop hPop = new HospPop(s);
                 hospitals.put(s, hPop);
                 System.out.println("*Starting pop thread for " + s + "*");
                 executor.execute(hPop);
-            }
-            
+            }            
             
             executor.shutdown();
             while (!executor.isTerminated()) {
@@ -110,7 +113,7 @@ public class HospitalStarter {
         return fr;
     }
 
-    static ArrayList<User> getIntervals() {
+    static Queue<User> getIntervals() {
         return intervals;
     }
 

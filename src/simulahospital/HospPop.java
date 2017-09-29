@@ -18,22 +18,20 @@ public class HospPop implements Runnable {
 
     public HospPop(String hospCode) {
         this.hospCode = hospCode;
-        popIntervals = new LinkedBlockingDeque<>();
-        popIntervals.add(0);
+        popIntervals = new LinkedBlockingDeque<>();        
     }
 
     public void insertInerval(int interval) {
-        popIntervals.add(interval);
+        popIntervals.offer(interval);
     }
 
     @Override
     public void run() {
         
         while (running) {
-
             while (popIntervals.isEmpty()) {
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(250);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -46,7 +44,10 @@ public class HospPop implements Runnable {
                 int popInterval = popIntervals.poll();  
                 
                 
-                if(popInterval == -1) running = false; //cheogu no final da fila e não serão colocados mais elementos
+                if(popInterval == -1){
+                    running = false;
+                    break;
+                } //cheogu no final da fila e não serão colocados mais elementos
 
                 try {
                     Thread.sleep(popInterval * 1000);
@@ -79,6 +80,7 @@ public class HospPop implements Runnable {
 
             }
         }
+        HospitalStarter.signalStop();
         System.out.println("Finished popping for " + hospCode);
 
     }

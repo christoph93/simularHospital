@@ -80,7 +80,7 @@ public class HospPush implements Runnable {
                 if (response.get(0).contains("200")) {
                     System.out.println("-> Push to " + response.get(1) + " OK");
                     //adiciona na fila do pop correspondente                    
-                    HospitalStarter.getHospitals().get(u.bestChoice()).insertInerval(u.getArrivalDelay() + u.getService());
+                    HospitalStarter.getHospitals().get(u.bestChoice()).insertInerval(u.getService());
                 } else {
                     System.out.println("-> Push to " + response.get(1) + " FAIL");
                 }

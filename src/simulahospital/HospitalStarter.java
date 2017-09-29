@@ -4,11 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -21,6 +19,7 @@ public class HospitalStarter {
     String fileName;
     static Queue<User> intervals;
     static HashMap<String,HospPop> hospitals;
+    static int stopSignal;
 
     public HospitalStarter(String file) {
         fileName = file;
@@ -35,7 +34,7 @@ public class HospitalStarter {
     Lê os a lista de chegadas global e decide para qual hospital o usuário será enviado
     
      */
-    public void start() {
+    public void start() throws InterruptedException {
 
         try {
             fr = new FileReader(fileName);
@@ -77,6 +76,7 @@ public class HospitalStarter {
             fr.close();
             
             hospitals = new HashMap<>(hospCodes.length);
+            stopSignal = 0;
 
             ExecutorService executor = Executors.newFixedThreadPool(3);
 
@@ -97,9 +97,15 @@ public class HospitalStarter {
             }            
             
             executor.shutdown();
-            while (!executor.isTerminated()) {
-            }
-
+            while (!executor.isTerminated() && (stopSignal != hospCodes.length)) {
+                if(stopSignal >= hospCodes.length){
+                    Clock.stop();
+                }
+                Thread.sleep(500);                
+            }     
+            Clock.stop();
+            System.out.println("Shutting down!");
+            
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HospitalStarter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -111,6 +117,10 @@ public class HospitalStarter {
 
     public FileReader getFr() {
         return fr;
+    }
+    
+    static void signalStop(){
+        stopSignal++;
     }
 
     static Queue<User> getIntervals() {

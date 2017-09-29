@@ -44,7 +44,8 @@ public class HospTimes {
         //System.out.println(json);        
         //para teste: (comentar o for depois)
         times.put("puc", 5);
-        //times.put("moinhos", 5);        
+        times.put("moinhos", 5);        
+        times.put("mdd", 5); 
         return times;
 
     }

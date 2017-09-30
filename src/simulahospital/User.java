@@ -34,18 +34,19 @@ public class User {
 
         HashMap<String, Integer> localTotalTimes = new HashMap<>(travelTimes.keySet().size());
 
-        HospTimes htimes = new HospTimes(travelTimes.keySet());        
-        queueWaitTimes = htimes.getTimes();        
+        HospTimes htimes = new HospTimes(travelTimes.keySet());
+        queueWaitTimes = htimes.getTimes();
 
         queueWaitTimes.keySet().stream().forEach((s) -> {
             //calcula o tempo total para cada hospital         
             localTotalTimes.put(s, travelTimes.get(s) + queueWaitTimes.get(s));
         });
         this.totalTimes = localTotalTimes;
-        System.out.println("totaTimes: " + totalTimes);
-            System.out.println("travelTimes: " + travelTimes);
-            System.out.println("queueTimes: " + queueWaitTimes);
-        
+
+//        System.out.println("totaTimes: " + totalTimes);
+//        System.out.println("travelTimes: " + travelTimes);
+//        System.out.println("queueTimes: " + queueWaitTimes);
+
         return this.totalTimes;
     }
 
@@ -64,8 +65,8 @@ public class User {
 
     public String bestChoice() {
 
-        int bestTime = 999;
-        int currTotalTime = 0;
+        long bestTime = 999999999;
+        long currTotalTime = 0;
 
         for (String s : totalTimes.keySet()) {
             currTotalTime = queueWaitTimes.get(s) + travelTimes.get(s);
@@ -80,12 +81,12 @@ public class User {
 
     @Override
     public String toString() {
-        return "Travel times: " + travelTimes + 
-                " Wait times: " + queueWaitTimes + 
-                " Total times: " + totalTimes +  
-                " Best choice: " + bestChoice +
-                "\nArrival delay: " + arrivalDelay +                
-                " Service time: " + service;
+        return "Travel times: " + travelTimes
+                + " Wait times: " + queueWaitTimes
+                + " Total times: " + totalTimes
+                + " Best choice: " + bestChoice
+                + "\nArrival delay: " + arrivalDelay
+                + " Service time: " + service;
 
     }
 

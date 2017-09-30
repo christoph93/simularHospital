@@ -59,10 +59,7 @@ public class HospPop implements Runnable {
                 jsonData.add(new BasicNameValuePair("hospitalCode", hospCode));
                 p = new Post("http://tcc-si.herokuapp.com/api/queue/pop", jsonData);
 
-                ArrayList<String> response = new ArrayList<>();
-
-                response.add(0, "200");
-                response.add(1, "puc");
+                ArrayList<String> response = new ArrayList<>();                
 
                 try {
                     //envia o post e coloca a resposta no array
@@ -74,7 +71,7 @@ public class HospPop implements Runnable {
                     if (response.get(0).contains("200")) {
                         System.out.println("<- Pop from " + response.get(1) + " OK");
                     } else {
-                        System.out.println("<- Pop from " + response.get(1) + " FAIL");
+                        System.out.println("<- Pop from " + hospCode + " FAIL");
                     }
                 }
 

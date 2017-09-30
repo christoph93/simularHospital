@@ -51,14 +51,14 @@ public class HospPush implements Runnable {
             List<NameValuePair> jsonData = new ArrayList<>();
 
             u.calculateTotalTimes(queueWaitTimes);
-            /*
+            
             try {
                 //cria o post para a melhor escolha
                 u.calculateTotalTimes(); //calcula os tempos
             } catch (IOException ex) {
                 Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
             }
-             */
+             
 
             jsonData.add(new BasicNameValuePair("hospitalCode", u.bestChoice())); //atribui a melhor escolha para hospitalCode           
 
@@ -74,8 +74,8 @@ public class HospPush implements Runnable {
                 //System.out.println(ex);
             } finally {
 
-                response.add(0, "200");
-                response.add(1, "puc");
+//                response.add(0, "200");
+//                response.add(1, "puc");
 
                 if (response.get(0).contains("200")) {
                     System.out.println("-> Push to " + response.get(1) + " OK");

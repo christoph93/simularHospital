@@ -97,6 +97,8 @@ public class Post {
                     }
                     EntityUtils.consume(entity);
                 } else{
+                    responseList.add(0, "");
+                    responseList.add(1, String.valueOf(jsonData.get(0)));
                     System.out.println("Failed post to " + url);
                 }
             } finally {

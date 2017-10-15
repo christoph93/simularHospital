@@ -19,6 +19,13 @@ class Clock implements Runnable {
 
     @Override
     public void run() {
+        
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Clock.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         i = 0;
         while (aux) {
             System.out.println(i);

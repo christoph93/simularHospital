@@ -21,7 +21,7 @@ public class HospPush implements Runnable {
         Map<String, Integer> queueWaitTimes = null;
 
         //getTimeInterval é o intervalo de ciclos para atualizar os tempos.
-        int getTimeInterval = 2;
+        int getTimeInterval = 5;
 
         //para atualizar na primeira vez que entrar no for
         int i = getTimeInterval;
@@ -29,6 +29,8 @@ public class HospPush implements Runnable {
         while (!HospitalStarter.getIntervals().isEmpty()) {
             User u = HospitalStarter.getIntervals().poll(); //pega o próximo elemento da fila
             time = u.getArrivalDelay();
+            
+            //espera o intervalo definido para esta chegada
             try {
                 Thread.sleep(time * 1000);
             } catch (InterruptedException ex) {
@@ -39,7 +41,7 @@ public class HospPush implements Runnable {
             if (getTimeInterval == i) {
                 try {
                     queueWaitTimes = hTimes.getTimes();
-                    // System.out.println("Updating wait times: " + queueWaitTimes);
+                    System.out.println("Updating wait times: " + queueWaitTimes);
                 } catch (IOException ex) {
                     Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -71,16 +73,18 @@ public class HospPush implements Runnable {
 
             } catch (IOException ex) {
                 Logger.getLogger(HospPush.class.getName()).log(Level.SEVERE, null, ex);
-                //System.out.println(ex);
-            } finally {
-
-//                response.add(0, "200");
-//                response.add(1, "puc");
-
+            } finally {                
                 if (response.get(0).contains("200")) {
                     System.out.println("-> Push to " + response.get(1) + " OK");
-                    //adiciona na fila do pop correspondente                    
+                    //adiciona na fila do pop correspondente  
                     HospitalStarter.getHospitals().get(u.bestChoice()).insertInerval(u.getService());
+                    /*if(HospitalStarter.getHospitals().get(u.bestChoice()).queueIsEmpty()){
+                        HospitalStarter.getHospitals().get(u.bestChoice()).insertInerval(u.getService());
+                    } else {
+                        HospitalStarter.getHospitals().get(u.bestChoice()).insertInerval(u.getService() - u.getArrivalDelay());
+                    }
+                    */
+                    
                 } else {
                     System.out.println("-> Push to " + response.get(1) + " FAIL");
                 }

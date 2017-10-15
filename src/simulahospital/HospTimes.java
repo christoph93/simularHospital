@@ -7,8 +7,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 /**
  *
@@ -29,7 +32,7 @@ public class HospTimes {
 
         for (String s : hospCodes) {
             try {
-                String response = g.sendRequest("http://tcc-si.herokuapp.com/api/queue/getMediumTime/" + s);
+                String response = g.sendRequest("http://tcc-si.herokuapp.com/api/queue/getMediumTime/" + s);                
                 String[] aux = response.replace("\"", "").split(":");
 
                 int t = ((Integer.parseInt(aux[0]) * 3600) + (Integer.parseInt(aux[1]) * 60) + Integer.parseInt(aux[2]));

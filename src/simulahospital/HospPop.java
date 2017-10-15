@@ -24,14 +24,23 @@ public class HospPop implements Runnable {
     public void insertInerval(int interval) {
         popIntervals.offer(interval);
     }
+    
+    public boolean queueIsEmpty(){
+        if(popIntervals.isEmpty()){
+            return true;
+        } else return false;
+    }
 
     @Override
     public void run() {
         
+        System.out.println("*running pop thread for " + hospCode + "*");
+        
         while (running) {
             while (popIntervals.isEmpty()) {
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(500);
+                    //System.out.println("Checking " + hospCode + " for pops");
                 } catch (InterruptedException ex) {
                     Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -41,7 +50,7 @@ public class HospPop implements Runnable {
 
             if (!popIntervals.isEmpty()) {                
                 //tira o próximo itervalo da fila
-                int popInterval = popIntervals.poll();  
+                int popInterval = popIntervals.peek();  
                 
                 
                 if(popInterval == -1){
@@ -54,6 +63,8 @@ public class HospPop implements Runnable {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(HospPop.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                
+                popIntervals.poll();
 
                 List<NameValuePair> jsonData = new ArrayList<>();
                 jsonData.add(new BasicNameValuePair("hospitalCode", hospCode));

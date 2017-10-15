@@ -91,9 +91,9 @@ public class HospitalStarter {
             //cria uma pop thread para cada hospital
             for (String s : hospCodes) {                
                 HospPop hPop = new HospPop(s);
-                hospitals.put(s, hPop);
-                System.out.println("*Starting pop thread for " + s + "*");
-                executor.execute(hPop);
+                hospitals.put(s, hPop);                
+                //System.out.println("*Starting pop thread for " + s + "*");
+                executor.execute(hPop); 
             }            
             
             executor.shutdown();

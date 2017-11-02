@@ -20,7 +20,7 @@ public class User {
     private HashMap<String, Integer> totalTimes;
     private int arrivalDelay;
     private int service;
-    private String bestChoice = "no best choice";
+    private String bestChoice = "";
 
     public User(Map<String, Integer> travelTimes, int arrival, int service) {
         this.travelTimes = travelTimes;
@@ -46,7 +46,6 @@ public class User {
 //        System.out.println("totaTimes: " + totalTimes);
 //        System.out.println("travelTimes: " + travelTimes);
 //        System.out.println("queueTimes: " + queueWaitTimes);
-
         return this.totalTimes;
     }
 
@@ -68,12 +67,15 @@ public class User {
         long bestTime = 999999999;
         long currTotalTime = 0;
 
-        for (String s : totalTimes.keySet()) {
-            currTotalTime = queueWaitTimes.get(s) + travelTimes.get(s);
-            //decide se é melhor que o melhor tempo atual
-            if (bestTime > currTotalTime) {
-                bestChoice = s;
-                bestTime = currTotalTime;
+        if (this.bestChoice.equals("")) {
+
+            for (String s : totalTimes.keySet()) {
+                currTotalTime = queueWaitTimes.get(s) + travelTimes.get(s);
+                //decide se é melhor que o melhor tempo atual
+                if (bestTime > currTotalTime) {
+                    bestChoice = s;
+                    bestTime = currTotalTime;
+                }
             }
         }
         return bestChoice;
